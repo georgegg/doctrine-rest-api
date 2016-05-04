@@ -1,0 +1,27 @@
+{
+  "name": "pmill/doctrine-rest-api",
+  "description": "A REST API generated from doctrine entities",
+  "keywords": ["php", "doctrine", "rest", "api", "entity"],
+  "homepage": "https://github.com/pmill/doctrine-rest-api",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "pmill",
+      "email": "dev.pmill@gmail.com"
+    }
+  ],
+  "require": {
+    "doctrine/orm": "^2.5",
+    "symfony/routing": "^3.0",
+    "symfony/config": "^3.0",
+    "symfony/http-foundation": "^3.0",
+    "hassankhan/config": "^0.10.0",
+    "sensio/framework-extra-bundle": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "pmill\\Doctrine\\Rest\\": "src/",
+      "pmill\\Doctrine\\Rest\\Example\\": "example/"
+    }
+  }
+}
