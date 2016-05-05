@@ -3,6 +3,7 @@ namespace pmill\Doctrine\Rest;
 
 use Doctrine\Common\Annotations\Reader;
 use pmill\Doctrine\Rest\Annotation\Url;
+use pmill\Doctrine\Rest\Controller\CollectionController;
 use pmill\Doctrine\Rest\Controller\EntityController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -15,7 +16,7 @@ class Router
     public static $DEFAULT_ENTITY_CONTROLLER = EntityController::class;
     public static $DEFAULT_ENTITY_METHODS = ['get', 'patch', 'delete'];
 
-    public static $DEFAULT_COLLECTION_CONTROLLER = EntityController::class;
+    public static $DEFAULT_COLLECTION_CONTROLLER = CollectionController::class;
     public static $DEFAULT_COLLECTION_METHODS = ['get', 'post'];
     
     /**
@@ -107,27 +108,35 @@ class Router
         $this->symfonyRouteCollection = new RouteCollection();
         $this->routes = [];
 
+        foreach ($entityClasses as $entityClass) {
+            $this->generateRoutesFromEntity($annotationReader, $entityClass);
+        }
+    }
+
+    /**
+     * @param Reader $annotationReader
+     * @param $entityClass
+     */
+    protected function generateRoutesFromEntity(Reader $annotationReader, $entityClass)
+    {
         $entityMethods = self::$DEFAULT_ENTITY_METHODS;
         $collectionMethods = self::$DEFAULT_COLLECTION_METHODS;
+        $reflectionClass = new \ReflectionClass($entityClass);
 
-        foreach ($entityClasses as $entityClass) {
-            $reflectionClass = new \ReflectionClass($entityClass);
+        /** @var Url $urlAnnotation */
+        if ($urlAnnotation = $annotationReader->getClassAnnotation($reflectionClass, Url::class)) {
+            foreach ($entityMethods as $method) {
+                $routeName = $entityClass . '::entity::'.$method;
+                $this->addRoute($routeName, $method, $urlAnnotation->entity, self::$DEFAULT_ENTITY_CONTROLLER, $method.'Action', [
+                    'entityClass' => $entityClass,
+                ]);
+            }
 
-            /** @var Url $urlAnnotation */
-            if ($urlAnnotation = $annotationReader->getClassAnnotation($reflectionClass, Url::class)) {
-                foreach ($entityMethods as $method) {
-                    $routeName = $entityClass . '::entity::'.$method;
-                    $this->addRoute($routeName, $method, $urlAnnotation->entity, self::$DEFAULT_ENTITY_CONTROLLER, $method.'Action', [
-                        'entityClass' => $entityClass,
-                    ]);
-                }
-
-                foreach ($collectionMethods as $method) {
-                    $routeName = $entityClass . '::collection::'.$method;
-                    $this->addRoute($routeName, $method, $urlAnnotation->collection, self::$DEFAULT_COLLECTION_CONTROLLER, $method.'Action', [
-                        'entityClass' => $entityClass,
-                    ]);
-                }
+            foreach ($collectionMethods as $method) {
+                $routeName = $entityClass . '::collection::'.$method;
+                $this->addRoute($routeName, $method, $urlAnnotation->collection, self::$DEFAULT_COLLECTION_CONTROLLER, $method.'Action', [
+                    'entityClass' => $entityClass,
+                ]);
             }
         }
     }
