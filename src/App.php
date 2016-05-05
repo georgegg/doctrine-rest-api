@@ -2,6 +2,7 @@
 namespace pmill\Doctrine\Rest;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\ORM\EntityManager;
 use Noodlehaus\Config;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -23,6 +24,17 @@ class App
     protected $doctrine;
 
     /**
+     * @var Container
+     */
+    protected $container;
+
+    /**
+     * @var Dispatcher
+     */
+    protected $dispatcher;
+
+    /**
+     * @param $autoloader
      * @param $configDirectory
      */
     public function __construct($autoloader, $configDirectory)
@@ -31,7 +43,10 @@ class App
 
         $this->config = new Config($configDirectory);
         $this->doctrine = new Doctrine($this->config->get('database'));
+        $this->container = $this->setupContainer();
+
         $this->router = new Router($this->doctrine);
+        $this->dispatcher = new Dispatcher($this->container);
     }
 
     /**
@@ -40,7 +55,10 @@ class App
      */
     public function run(Request $request = null)
     {
-        return $this->router->match($request);
+        $routeData = $this->router->match($request);
+        $routeResult = $this->dispatcher->dispatchRoute($routeData);
+
+        return $routeResult;
     }
 
     /**
@@ -89,5 +107,48 @@ class App
     public function setDoctrine($doctrine)
     {
         $this->doctrine = $doctrine;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * @param Container $container
+     */
+    public function setContainer($container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * @return Dispatcher
+     */
+    public function getDispatcher()
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * @param Dispatcher $dispatcher
+     */
+    public function setDispatcher($dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
+
+    /**
+     * @return Container
+     */
+    protected function setupContainer()
+    {
+        $container = new Container();
+        $container->set(EntityManager::class, $this->doctrine->getEntityManager());
+
+        return $container;
     }
 }
