@@ -3,16 +3,13 @@ namespace pmill\Doctrine\Rest\Controller;
 
 use Doctrine\ORM\EntityManager;
 use pmill\Doctrine\Rest\Traits\EntityManagerHelperTrait;
+use pmill\Doctrine\Rest\Traits\RequestHelperTrait;
 use Symfony\Component\HttpFoundation\Request;
 
 class CollectionController
 {
     use EntityManagerHelperTrait;
-
-    /**
-     * @var Request
-     */
-    protected $request;
+    use RequestHelperTrait;
 
     /**
      * @param EntityManager $entityManager
@@ -39,7 +36,7 @@ class CollectionController
      */
     public function postAction($entityClass)
     {
-        $data = $this->request->request->all();
+        $data = $this->getRequestPayload();
         $entity = $this->hydrateEntity($entityClass, $data);
         return $this->persistEntity($entity);
     }

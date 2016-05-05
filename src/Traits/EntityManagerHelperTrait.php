@@ -50,15 +50,17 @@ trait EntityManagerHelperTrait
     }
 
     /**
-     * @param $entityClassName
+     * @param $entity
      * @param array $data
      * @return mixed|object
      * @throws \Exception
      */
-    protected function hydrateEntity($entityClassName, array $data)
+    protected function hydrateEntity($entity, array $data)
     {
+        $this->assertEntityManager();
+
         $hydrator = new ArrayHydrator($this->entityManager);
-        return $hydrator->hydrate($entityClassName, $data);
+        return $hydrator->hydrate($entity, $data);
     }
 
     /**
@@ -67,6 +69,8 @@ trait EntityManagerHelperTrait
      */
     protected function persistEntity($entity)
     {
+        $this->assertEntityManager();
+
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
 
@@ -78,7 +82,7 @@ trait EntityManagerHelperTrait
      */
     protected function assertEntityManager()
     {
-        if ($this->entityManager instanceof EntityManager) {
+        if (!$this->entityManager instanceof EntityManager) {
             throw new RestException('Cannot use EntityManagerHelperTrait in a class that does not declare an $entityManager property', 500);
         }
     }
