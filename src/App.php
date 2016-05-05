@@ -37,7 +37,7 @@ class App
     /**
      * @var Response
      */
-    protected $resoponse;
+    protected $response;
 
     /**
      * @param $autoloader
@@ -53,7 +53,7 @@ class App
 
         $this->router = new Router($this->doctrine);
         $this->dispatcher = new Dispatcher($this->container);
-        $this->resoponse = new Response();
+        $this->response = new Response();
     }
 
     /**
@@ -74,7 +74,7 @@ class App
             ];
         }
 
-        return $this->resoponse->handle($routeResult);
+        return $this->response->handle($routeResult);
     }
 
     /**
