@@ -35,6 +35,11 @@ class App
     protected $dispatcher;
 
     /**
+     * @var Response
+     */
+    protected $resoponse;
+
+    /**
      * @param $autoloader
      * @param $configDirectory
      */
@@ -48,13 +53,14 @@ class App
 
         $this->router = new Router($this->doctrine);
         $this->dispatcher = new Dispatcher($this->container);
+        $this->resoponse = new Response();
     }
 
     /**
      * @param Request $request
-     * @return array
+     * @return array|\Exception|mixed|RestException
      */
-    public function run(Request $request = null)
+    public function handle(Request $request = null)
     {
         try {
             $routeData = $this->router->match($request);
@@ -68,7 +74,7 @@ class App
             ];
         }
 
-        return $routeResult;
+        return $this->resoponse->handle($routeResult);
     }
 
     /**
