@@ -2,9 +2,12 @@
 namespace pmill\Doctrine\Rest\Controller;
 
 use Doctrine\ORM\EntityManager;
+use pmill\Doctrine\Rest\Traits\EntityManagerHelperTrait;
 
 class EntityController
 {
+    use EntityManagerHelperTrait;
+
     /**
      * @var EntityManager
      */
@@ -25,9 +28,6 @@ class EntityController
      */
     public function getAction($entityClass, $id)
     {
-        return [
-            'entityClass' => $entityClass,
-            'id' => $id,
-        ];
+        return $this->findEntityById($entityClass, $id);
     }
 }

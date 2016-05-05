@@ -2,6 +2,7 @@
 namespace pmill\Doctrine\Rest\Example\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use pmill\Doctrine\Rest\Annotation as REST;
 
 /**
@@ -9,7 +10,7 @@ use pmill\Doctrine\Rest\Annotation as REST;
  * @ORM\Table(name="users")
  * @REST\Url(entity="/api/user/{id}", collection="/api/user")
  */
-class User
+class User implements JsonSerializable
 {
     /**
      * @ORM\Id
@@ -30,6 +31,17 @@ class User
      * @var string
      */
     protected $email;
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
+    }
 
     /**
      * @return int
