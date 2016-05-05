@@ -158,6 +158,22 @@ class App
     }
 
     /**
+     * @return Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
+    }
+
+    /**
      * @return Container
      */
     protected function setupContainer()
