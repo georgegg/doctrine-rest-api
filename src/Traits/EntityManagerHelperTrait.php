@@ -1,13 +1,20 @@
 <?php
 namespace pmill\Doctrine\Rest\Traits;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
+use pmill\Doctrine\Hydrator\ArrayHydrator;
 use pmill\Doctrine\Rest\Exception\NotFoundException;
 use pmill\Doctrine\Rest\Exception\RestException;
 
 trait EntityManagerHelperTrait
 {
+    /**
+     * @var EntityManager
+     */
+    protected $entityManager;
+
     /**
      * @param $entityClassName
      * @param $id
@@ -43,11 +50,35 @@ trait EntityManagerHelperTrait
     }
 
     /**
+     * @param $entityClassName
+     * @param array $data
+     * @return mixed|object
+     * @throws \Exception
+     */
+    protected function hydrateEntity($entityClassName, array $data)
+    {
+        $hydrator = new ArrayHydrator($this->entityManager);
+        return $hydrator->hydrate($entityClassName, $data);
+    }
+
+    /**
+     * @param $entity
+     * @return mixed
+     */
+    protected function persistEntity($entity)
+    {
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
+
+        return $entity;
+    }
+
+    /**
      * @throws RestException
      */
     protected function assertEntityManager()
     {
-        if (!property_exists($this, 'entityManager')) {
+        if ($this->entityManager instanceof EntityManager) {
             throw new RestException('Cannot use EntityManagerHelperTrait in a class that does not declare an $entityManager property', 500);
         }
     }

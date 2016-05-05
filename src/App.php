@@ -62,6 +62,8 @@ class App
      */
     public function handle(Request $request = null)
     {
+        $this->container->set(Request::class, $request);
+
         try {
             $routeData = $this->router->match($request);
             $routeResult = $this->dispatcher->dispatchRoute($routeData);

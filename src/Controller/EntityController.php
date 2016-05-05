@@ -9,11 +9,6 @@ class EntityController
     use EntityManagerHelperTrait;
 
     /**
-     * @var EntityManager
-     */
-    protected $entityManager;
-
-    /**
      * @param EntityManager $entityManager
      */
     public function __construct(EntityManager $entityManager)

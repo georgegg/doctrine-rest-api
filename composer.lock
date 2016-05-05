@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "da2a9b71c59563736b13f7e0dcfe4f3f",
-    "content-hash": "2c5e7dfc9b3268570e86b6ed387344ad",
+    "hash": "66922b323aec2a1d13573d4f632af70a",
+    "content-hash": "ce8a0656f1a177da6c7f3a6f28b1d74a",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -874,6 +874,54 @@
                 "reflection"
             ],
             "time": "2015-11-29 10:34:25"
+        },
+        {
+            "name": "pmill/doctrine-array-hydrator",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmill/doctrine-array-hydrator.git",
+                "reference": "a4c6bd0c6c35ddb9235872295f8fd66b7c457bf8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmill/doctrine-array-hydrator/zipball/a4c6bd0c6c35ddb9235872295f8fd66b7c457bf8",
+                "reference": "a4c6bd0c6c35ddb9235872295f8fd66b7c457bf8",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "^2.5"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "mockery/mockery": "^0.9.4",
+                "phpunit/phpunit": "4.8.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pmill\\Doctrine\\Hydrator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "pmill",
+                    "email": "dev.pmill@gmail.com"
+                }
+            ],
+            "description": " An array to entity hydrator for Doctrine 2 entities ",
+            "homepage": "https://github.com/pmill/doctrine-array-hydrator",
+            "keywords": [
+                "array",
+                "doctrine",
+                "hydrator",
+                "php"
+            ],
+            "time": "2016-02-17 20:29:44"
         },
         {
             "name": "psr/log",
