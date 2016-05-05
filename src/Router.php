@@ -5,7 +5,10 @@ use Doctrine\Common\Annotations\Reader;
 use pmill\Doctrine\Rest\Annotation\Url;
 use pmill\Doctrine\Rest\Controller\CollectionController;
 use pmill\Doctrine\Rest\Controller\EntityController;
+use pmill\Doctrine\Rest\Exception\RestException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
@@ -45,7 +48,8 @@ class Router
 
     /**
      * @param Request $request
-     * @return array
+     * @return mixed
+     * @throws RestException
      */
     public function match(Request $request = null)
     {
@@ -53,7 +57,14 @@ class Router
             $request = Request::createFromGlobals();
         }
 
-        $matchedRoute = $this->symfonyRouter->matchRequest($request);
+        try {
+            $matchedRoute = $this->symfonyRouter->matchRequest($request);
+        } catch (ResourceNotFoundException $e) {
+            throw new RestException('The requested url could not be handled', 404);
+        } catch (MethodNotAllowedException $e) {
+            throw new RestException('The requested url does not respond to the given HTTP method', 405);
+        }
+
         $routeName = $matchedRoute['_route'];
         unset($matchedRoute['_route']);
 
@@ -72,6 +83,10 @@ class Router
      */
     public function addRoute($name, $method, $url, $controller, $action, array $params = [])
     {
+        if (!method_exists($controller, $action)) {
+            return;
+        }
+
         $this->routes[$name] = [
             'controller' => $controller,
             'action' => $action,
