@@ -7,7 +7,7 @@ use pmill\Doctrine\Rest\Annotation as REST;
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
- * @REST\Url(entity="/api/user/{id:[0-9]+}", collection="/api/user")
+ * @REST\Url(entity="/api/user/{id}", collection="/api/user")
  */
 class User
 {

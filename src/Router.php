@@ -3,6 +3,7 @@ namespace pmill\Doctrine\Rest;
 
 use Doctrine\Common\Annotations\Reader;
 use pmill\Doctrine\Rest\Annotation\Url;
+use pmill\Doctrine\Rest\Controller\EntityController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
@@ -11,10 +12,21 @@ use Symfony\Component\Routing\RouteCollection;
 
 class Router
 {
+    public static $DEFAULT_ENTITY_CONTROLLER = EntityController::class;
+    public static $DEFAULT_ENTITY_METHODS = ['get', 'patch', 'delete'];
+
+    public static $DEFAULT_COLLECTION_CONTROLLER = EntityController::class;
+    public static $DEFAULT_COLLECTION_METHODS = ['get', 'post'];
+    
     /**
      * @var \Symfony\Component\Routing\Router
      */
     protected $symfonyRouter;
+
+    /**
+     * @var RouteCollection
+     */
+    protected $symfonyRouteCollection;
 
     /**
      * @var array
@@ -40,7 +52,32 @@ class Router
             $request = Request::createFromGlobals();
         }
 
-        return $this->symfonyRouter->matchRequest($request);
+        $matchedRoute = $this->symfonyRouter->matchRequest($request);
+        $routeName = $matchedRoute['_route'];
+        unset($matchedRoute['_route']);
+
+        $routeData = $this->routes[$routeName];
+        $routeData['params'] = array_merge($matchedRoute, $routeData['params']);
+
+        return $routeData;
+    }
+
+    /**
+     * @param $method
+     * @param $url
+     * @param $controller
+     * @param $action
+     * @param array $params
+     */
+    public function addRoute($name, $method, $url, $controller, $action, array $params = [])
+    {
+        $this->routes[$name] = [
+            'controller' => $controller,
+            'action' => $action,
+            'url' => $url,
+            'params' => $params,
+        ];
+        $this->symfonyRouteCollection->add($name, new Route($url, [], [], [], '', [], [$method]));
     }
 
     /**
@@ -57,41 +94,41 @@ class Router
         $context = new RequestContext();
         $context->fromRequest($request);
 
-        $routes = $this->generateRoutesFromEntities($doctrine->getAnnotationReader(), $doctrine->getEntityClasses());
-        return new UrlMatcher($routes, $context);
+        $this->generateRoutesFromEntities($doctrine->getAnnotationReader(), $doctrine->getEntityClasses());
+        return new UrlMatcher($this->symfonyRouteCollection, $context);
     }
 
     /**
      * @param Reader $annotationReader
      * @param array $entityClasses
-     * @return RouteCollection
      */
     protected function generateRoutesFromEntities(Reader $annotationReader, array $entityClasses)
     {
-        $routes = new RouteCollection();
+        $this->symfonyRouteCollection = new RouteCollection();
         $this->routes = [];
+
+        $entityMethods = self::$DEFAULT_ENTITY_METHODS;
+        $collectionMethods = self::$DEFAULT_COLLECTION_METHODS;
 
         foreach ($entityClasses as $entityClass) {
             $reflectionClass = new \ReflectionClass($entityClass);
 
             /** @var Url $urlAnnotation */
             if ($urlAnnotation = $annotationReader->getClassAnnotation($reflectionClass, Url::class)) {
-                $this->routes[$entityClass.'::entity'] = [
-                    'entity' => $entityClass,
-                    'controller' => '',
-                    $urlAnnotation->entity
-                ];
-                $routes->add($entityClass.'::entity', new Route($urlAnnotation->entity));
+                foreach ($entityMethods as $method) {
+                    $routeName = $entityClass . '::entity::'.$method;
+                    $this->addRoute($routeName, $method, $urlAnnotation->entity, self::$DEFAULT_ENTITY_CONTROLLER, $method.'Action', [
+                        'entityClass' => $entityClass,
+                    ]);
+                }
 
-                $this->routes[$entityClass.'::collection'] = [
-                    'entity' => $entityClass,
-                    'controller' => '',
-                    $urlAnnotation->collection
-                ];
-                $routes->add($entityClass.'::collection', new Route($urlAnnotation->collection));
+                foreach ($collectionMethods as $method) {
+                    $routeName = $entityClass . '::collection::'.$method;
+                    $this->addRoute($routeName, $method, $urlAnnotation->collection, self::$DEFAULT_COLLECTION_CONTROLLER, $method.'Action', [
+                        'entityClass' => $entityClass,
+                    ]);
+                }
             }
         }
-
-        return $routes;
     }
 }
