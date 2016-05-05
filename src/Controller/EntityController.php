@@ -2,13 +2,13 @@
 namespace pmill\Doctrine\Rest\Controller;
 
 use Doctrine\ORM\EntityManager;
-use pmill\Doctrine\Rest\Traits\EntityManagerHelperTrait;
+use pmill\Doctrine\Rest\Traits\EntityHelperTrait;
 use pmill\Doctrine\Rest\Traits\RequestHelperTrait;
 use Symfony\Component\HttpFoundation\Request;
 
 class EntityController
 {
-    use EntityManagerHelperTrait;
+    use EntityHelperTrait;
     use RequestHelperTrait;
 
     /**
@@ -45,5 +45,21 @@ class EntityController
         $entity = $this->hydrateEntity($entity, $data);
 
         return $this->persistEntity($entity);
+    }
+
+    /**
+     * @param $entityClass
+     * @param $id
+     * @return array
+     * @throws \pmill\Doctrine\Rest\Exception\NotFoundException
+     */
+    public function deleteAction($entityClass, $id)
+    {
+        $data = $this->getRequestPayload();
+
+        $entity = $this->findEntityById($entityClass, $id);
+        $this->removeEntity($entity);
+
+        return ['success' => true];
     }
 }

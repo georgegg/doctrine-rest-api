@@ -8,7 +8,7 @@ use pmill\Doctrine\Hydrator\ArrayHydrator;
 use pmill\Doctrine\Rest\Exception\NotFoundException;
 use pmill\Doctrine\Rest\Exception\RestException;
 
-trait EntityManagerHelperTrait
+trait EntityHelperTrait
 {
     /**
      * @var EntityManager
@@ -75,6 +75,18 @@ trait EntityManagerHelperTrait
         $this->entityManager->flush();
 
         return $entity;
+    }
+
+    /**
+     * @param $entity
+     * @throws RestException
+     */
+    protected function removeEntity($entity)
+    {
+        $this->assertEntityManager();
+
+        $this->entityManager->remove($entity);
+        $this->entityManager->flush();
     }
 
     /**

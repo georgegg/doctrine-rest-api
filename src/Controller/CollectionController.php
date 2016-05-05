@@ -2,13 +2,13 @@
 namespace pmill\Doctrine\Rest\Controller;
 
 use Doctrine\ORM\EntityManager;
-use pmill\Doctrine\Rest\Traits\EntityManagerHelperTrait;
+use pmill\Doctrine\Rest\Traits\EntityHelperTrait;
 use pmill\Doctrine\Rest\Traits\RequestHelperTrait;
 use Symfony\Component\HttpFoundation\Request;
 
 class CollectionController
 {
-    use EntityManagerHelperTrait;
+    use EntityHelperTrait;
     use RequestHelperTrait;
 
     /**
