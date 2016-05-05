@@ -4,6 +4,7 @@ namespace pmill\Doctrine\Rest;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\ORM\EntityManager;
 use Noodlehaus\Config;
+use pmill\Doctrine\Rest\Exception\RestException;
 use Symfony\Component\HttpFoundation\Request;
 
 class App
@@ -55,8 +56,17 @@ class App
      */
     public function run(Request $request = null)
     {
-        $routeData = $this->router->match($request);
-        $routeResult = $this->dispatcher->dispatchRoute($routeData);
+        try {
+            $routeData = $this->router->match($request);
+            $routeResult = $this->dispatcher->dispatchRoute($routeData);
+        } catch (RestException $e) {
+            $routeResult = $e;
+        } catch (\Exception $e) {
+            $routeResult = [
+                'error' => 'An unexpected error has occured',
+                'code' => 500,
+            ];
+        }
 
         return $routeResult;
     }

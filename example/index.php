@@ -6,4 +6,5 @@ $autoloader = require_once "../vendor/autoload.php";
 $app = new App($autoloader, 'config');
 $result = $app->run();
 
-var_dump($result);
+echo json_encode($result);
+die();

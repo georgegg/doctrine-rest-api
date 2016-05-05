@@ -2,6 +2,8 @@
 namespace pmill\Doctrine\Rest\Traits;
 
 use Doctrine\ORM\EntityNotFoundException;
+use pmill\Doctrine\Rest\Exception\NotFoundException;
+use pmill\Doctrine\Rest\Exception\RestException;
 
 trait EntityManagerHelperTrait
 {
@@ -15,12 +17,12 @@ trait EntityManagerHelperTrait
     protected function findEntityById($entityClassName, $id)
     {
         if (!property_exists($this, 'entityManager')) {
-            throw new \Exception('Cannot use EntityManagerHelperTrait in a class that does not declare an $entityManager property');
+            throw new RestException('Cannot use EntityManagerHelperTrait in a class that does not declare an $entityManager property', 500);
         }
 
         $entity = $this->entityManager->find($entityClassName, $id);
         if (is_null($entity)) {
-            throw EntityNotFoundException::fromClassNameAndIdentifier($entityClassName, $id);
+            throw new NotFoundException('We could not find a resource with the given id');
         }
 
         return $entity;
