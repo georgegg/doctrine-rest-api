@@ -18,7 +18,8 @@
     "hassankhan/config": "^0.10.0",
     "sensio/framework-extra-bundle": "^3.0",
     "php-di/php-di": "^5.2",
-    "pmill/doctrine-array-hydrator": "^0.1.2"
+    "pmill/doctrine-array-hydrator": "^0.1.2",
+    "league/fractal": "^0.13.0"
   },
   "autoload": {
     "psr-4": {

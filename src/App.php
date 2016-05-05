@@ -45,7 +45,7 @@ class App
      */
     public function __construct($autoloader, $configDirectory)
     {
-        AnnotationRegistry::registerLoader(array($autoloader, 'loadClass'));
+        AnnotationRegistry::registerLoader([$autoloader, 'loadClass']);
 
         $this->config = new Config($configDirectory);
         $this->doctrine = new Doctrine($this->config->get('database'));
@@ -53,7 +53,7 @@ class App
 
         $this->router = new Router($this->doctrine);
         $this->dispatcher = new Dispatcher($this->container);
-        $this->response = new Response();
+        $this->response = new Response($this->doctrine->getAnnotationReader());
     }
 
     /**
