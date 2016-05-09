@@ -5,6 +5,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use \Doctrine\ORM\Tools\Setup;
 use \Doctrine\ORM\EntityManager;
+use pmill\Doctrine\Rest\Event\Subscriber\PreUpdateSubscriber;
 
 class Doctrine
 {
@@ -35,6 +36,7 @@ class Doctrine
         $this->entityManager = EntityManager::create($databaseConfig, $doctrineConfig);
         $this->annotationReader = $this->getReaderFromEntityManager();
         $this->entityClasses = $this->getEntityClassesFromEntityManager();
+        $this->entityManager->getEventManager()->addEventSubscriber(new PreUpdateSubscriber($this->annotationReader));
     }
 
     /**

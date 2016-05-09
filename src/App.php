@@ -71,7 +71,8 @@ class App
             $routeResult = $e;
         } catch (\Exception $e) {
             $routeResult = [
-                'error' => 'An unexpected error has occured',
+                'error' => 'An unexpected error has occurred',
+                'error_detail' => $e->getMessage(),
                 'code' => 500,
             ];
         }

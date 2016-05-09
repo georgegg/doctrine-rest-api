@@ -12,4 +12,3 @@ $request  = Request::createFromGlobals();
 $response = $app->handle($request);
 
 $response->send();
-

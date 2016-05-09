@@ -34,6 +34,13 @@ class User implements JsonSerializable
     protected $email;
 
     /**
+     * @ORM\Column(type="string")
+     * @REST\PreUpdate("pmill\Doctrine\Rest\Event\Handler\HashValue")
+     * @var string
+     */
+    protected $password;
+
+    /**
      * @return array
      */
     public function jsonSerialize()
@@ -90,5 +97,21 @@ class User implements JsonSerializable
     public function setEmail($email)
     {
         $this->email = $email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
     }
 }
