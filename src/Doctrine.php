@@ -2,10 +2,12 @@
 namespace pmill\Doctrine\Rest;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\EventManager;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use \Doctrine\ORM\Tools\Setup;
 use \Doctrine\ORM\EntityManager;
-use pmill\Doctrine\Rest\Event\Subscriber\PreUpdateSubscriber;
+use pmill\Doctrine\Rest\Event\Listener\PreUpdateListener;
 
 class Doctrine
 {
@@ -33,10 +35,10 @@ class Doctrine
         $doctrineConfig = Setup::createAnnotationMetadataConfiguration($databaseConfig['entityPath'], true, null, null, false);
         $doctrineConfig->setAutoGenerateProxyClasses(false);
 
-        $this->entityManager = EntityManager::create($databaseConfig, $doctrineConfig);
+        $eventManager = $this->createEventManager();
+        $this->entityManager = EntityManager::create($databaseConfig, $doctrineConfig, $eventManager);
         $this->annotationReader = $this->getReaderFromEntityManager();
         $this->entityClasses = $this->getEntityClassesFromEntityManager();
-        $this->entityManager->getEventManager()->addEventSubscriber(new PreUpdateSubscriber($this->annotationReader));
     }
 
     /**
@@ -87,5 +89,18 @@ class Doctrine
         }
 
         return $entityClasses;
+    }
+
+    /**
+     * @return EventManager
+     */
+    protected function createEventManager()
+    {
+        $eventManager = new EventManager();
+
+        $preUpdateEventListener = new PreUpdateListener();
+        $eventManager->addEventListener(Events::preUpdate, $preUpdateEventListener);
+
+        return $eventManager;
     }
 }

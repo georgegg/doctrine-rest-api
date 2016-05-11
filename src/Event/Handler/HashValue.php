@@ -12,10 +12,9 @@ class HashValue implements HandlerInterface
     {
         $reflObject = new \ReflectionObject($object);
         $property = $reflObject->getProperty($property);
+        $property->setAccessible(true);
 
         $hashedPassword = $this->getHashedPassword($property->getValue($object));
-
-        $property->setAccessible(true);
         $property->setValue($object, $hashedPassword);
     }
 
