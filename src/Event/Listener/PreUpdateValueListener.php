@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use pmill\Doctrine\Rest\Annotation\PreUpdate;
 use pmill\Doctrine\Rest\Event\Handler\HandlerInterface;
 
-class PreUpdateListener
+class PreUpdateValueListener
 {
     /**
      * @param PreUpdateEventArgs $args

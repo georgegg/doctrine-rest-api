@@ -7,7 +7,8 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use \Doctrine\ORM\Tools\Setup;
 use \Doctrine\ORM\EntityManager;
-use pmill\Doctrine\Rest\Event\Listener\PreUpdateListener;
+use pmill\Doctrine\Rest\Event\Listener\PostUpdateValueListener;
+use pmill\Doctrine\Rest\Event\Listener\PreUpdateValueListener;
 
 class Doctrine
 {
@@ -98,8 +99,11 @@ class Doctrine
     {
         $eventManager = new EventManager();
 
-        $preUpdateEventListener = new PreUpdateListener();
+        $preUpdateEventListener = new PreUpdateValueListener();
         $eventManager->addEventListener(Events::preUpdate, $preUpdateEventListener);
+
+        $postUpdateEventListener = new PostUpdateValueListener();
+        $eventManager->addEventSubscriber($postUpdateEventListener);
 
         return $eventManager;
     }
