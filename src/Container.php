@@ -42,4 +42,15 @@ class Container
     {
         return $this->phpDiContainer->call([$class, $method], $params);
     }
+
+    /**
+     * @param $class
+     * @param array $params
+     * @return mixed
+     * @throws \DI\NotFoundException
+     */
+    public function make($class, array $params = [])
+    {
+        return $this->phpDiContainer->make($class, $params);
+    }
 }

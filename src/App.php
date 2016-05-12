@@ -66,7 +66,7 @@ class App
 
         try {
             $routeData = $this->router->match($request);
-            $routeResult = $this->dispatcher->dispatchRoute($routeData);
+            $routeResult = $this->dispatcher->dispatchRoute($request, $routeData);
         } catch (RestException $e) {
             $routeResult = $e;
         } catch (\Exception $e) {
@@ -181,8 +181,11 @@ class App
      */
     protected function setupContainer()
     {
+        $entityManager = $this->doctrine->getEntityManager();
+
         $container = new Container();
-        $container->set(EntityManager::class, $this->doctrine->getEntityManager());
+        $container->set(EntityManager::class, $entityManager);
+        $container->set(Config::class, $this->config);
 
         return $container;
     }

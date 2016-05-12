@@ -10,8 +10,9 @@ use pmill\Doctrine\Rest\Annotation as REST;
  * @ORM\Table(name="users")
  * @REST\Url(entity="/api/user/{id}", collection="/api/user")
  * @REST\FractalTransformer("pmill\Doctrine\Rest\Example\Transformer\UserTransformer")
+ * @REST\MethodAuthentication({"PATCH"})
  */
-class User implements JsonSerializable
+class User implements JsonSerializable, AuthenticatableWithToken
 {
     /**
      * @ORM\Id
