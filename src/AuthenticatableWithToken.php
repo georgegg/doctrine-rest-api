@@ -1,5 +1,5 @@
 <?php
-namespace pmill\Doctrine\Rest\AuthenticatableWithToken;
+namespace pmill\Doctrine\Rest;
 
 interface AuthenticatableWithToken
 {
