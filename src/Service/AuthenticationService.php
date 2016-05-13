@@ -4,7 +4,7 @@ namespace pmill\Doctrine\Rest\Service;
 use Doctrine\ORM\EntityManager;
 use Firebase\JWT\JWT;
 use Noodlehaus\Config;
-use pmill\Doctrine\Rest\AuthenticatableWithToken\AuthenticatableWithToken;
+use pmill\Doctrine\Rest\AuthenticatableWithToken;
 use pmill\Doctrine\Rest\Exception\AuthenticationException;
 
 class AuthenticationService

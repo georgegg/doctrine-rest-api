@@ -1,6 +1,7 @@
 <?php
 namespace pmill\Doctrine\Rest\Middleware;
 
+use pmill\Doctrine\Rest\Exception\AuthenticationException;
 use pmill\Doctrine\Rest\Service\AuthenticationService;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -21,14 +22,17 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * @param Request $request
+     * @throws AuthenticationException
      */
     public function handle(Request &$request)
     {
         $tokenHeader = $request->headers->get('Authorization');
         preg_match("/Bearer:? (.*)/", $tokenHeader, $output_array);
 
-        if (count($tokenHeader) == 2) {
-            $this->authenticationService->authenticateWithToken($tokenHeader[1]);
+        if (count($tokenHeader) != 2) {
+            throw new AuthenticationException('No authentication token provided', 401);
         }
+
+        $this->authenticationService->authenticateWithToken($tokenHeader[1]);
     }
 }
