@@ -4,6 +4,7 @@ namespace pmill\Doctrine\Rest\Example\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use pmill\Doctrine\Rest\Annotation as REST;
+use pmill\Doctrine\Rest\AuthenticatableWithToken;
 
 /**
  * @ORM\Entity
@@ -49,6 +50,16 @@ class User implements JsonSerializable, AuthenticatableWithToken
         return [
             'id' => $this->id,
             'name' => $this->name,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getTokenIdentifier()
+    {
+        return [
+            'id' => $this->id,
         ];
     }
 

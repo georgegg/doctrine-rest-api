@@ -2,8 +2,11 @@
 return [
     'authentication' => [
         'jwt' => [
-            'key' => 'key',
+            'key' => '',
             'algorithms' => ['HS256'],
+            'issuer' => '',
+            'subject' => '',
+            'expires' => '1 hour',
         ],
     ],
 ];
