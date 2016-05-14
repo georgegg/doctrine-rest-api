@@ -22,10 +22,15 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * @param Request $request
+     * @param array $routeData
      * @throws AuthenticationException
      */
-    public function handle(Request &$request)
+    public function handle(Request &$request, array $routeData)
     {
+        if (!$this->isAuthenticationRequired($routeData)) {
+            return;
+        }
+
         $tokenHeader = $request->headers->get('Authorization');
         preg_match("/Bearer:? (.*)/", $tokenHeader, $output_array);
 
@@ -34,5 +39,14 @@ class AuthenticationMiddleware implements MiddlewareInterface
         }
 
         $this->authenticationService->authenticateWithToken($tokenHeader[1]);
+    }
+
+    /**
+     * @param array $routeData
+     * @return bool
+     */
+    protected function isAuthenticationRequired(array $routeData)
+    {
+        return false;
     }
 }

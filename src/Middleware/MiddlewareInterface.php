@@ -7,6 +7,7 @@ interface MiddlewareInterface
 {
     /**
      * @param Request $request
+     * @param array $routeData
      */
-    public function handle(Request &$request);
+    public function handle(Request &$request, array $routeData);
 }

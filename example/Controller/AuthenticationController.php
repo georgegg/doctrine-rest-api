@@ -28,6 +28,6 @@ class AuthenticationController
      */
     public function login()
     {
-
+        return ['success' => true];
     }
 }

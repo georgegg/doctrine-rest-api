@@ -39,7 +39,7 @@ class Dispatcher
         }
 
         foreach ($this->middleware as $middleware) {
-            $middleware->handle($request);
+            $middleware->handle($request, $routeData);
         }
 
         return $this->container->call($routeData['controller'], $routeData['action'], $routeData['params']);
