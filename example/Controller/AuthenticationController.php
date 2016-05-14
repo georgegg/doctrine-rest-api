@@ -1,6 +1,7 @@
 <?php
 namespace pmill\Doctrine\Rest\Example\Controller;
 
+use pmill\Doctrine\Rest\Annotation as RPC;
 use pmill\Doctrine\Rest\Service\AuthenticationService;
 
 /**
@@ -22,7 +23,7 @@ class AuthenticationController
     }
 
     /**
-     * @RPC\Url("/api/auth/login")
+     * @RPC\Route("/api/auth/login")
      * @RPC\Method("POST")
      */
     public function login()

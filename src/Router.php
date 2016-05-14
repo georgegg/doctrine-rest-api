@@ -4,8 +4,10 @@ namespace pmill\Doctrine\Rest;
 use Doctrine\Common\Annotations\Reader;
 use pmill\Doctrine\Rest\Controller\CollectionController;
 use pmill\Doctrine\Rest\Controller\EntityController;
+use pmill\Doctrine\Rest\Annotation\Method as MethodAnnotation;
 use pmill\Doctrine\Rest\Annotation\Route as RouteAnnotation;
 use pmill\Doctrine\Rest\Exception\RestException;
+use pmill\Doctrine\Rest\Helper\FileHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -38,11 +40,18 @@ class Router
     protected $routes = [];
 
     /**
+     * @var array
+     */
+    protected $config;
+
+    /**
      * @param Doctrine $doctrine
+     * @param array $routerConfig
      * @param Request $request
      */
-    public function __construct(Doctrine $doctrine, Request $request = null)
+    public function __construct(Doctrine $doctrine, array $routerConfig, Request $request = null)
     {
+        $this->config = $routerConfig;
         $this->symfonyRouter = $this->createRouter($doctrine, $request);
     }
 
@@ -110,7 +119,12 @@ class Router
         $context = new RequestContext();
         $context->fromRequest($request);
 
+        $this->symfonyRouteCollection = new RouteCollection();
+        $this->routes = [];
+
         $this->generateRoutesFromEntities($doctrine->getAnnotationReader(), $doctrine->getEntityClasses());
+        $this->generateRoutesFromControllers($doctrine->getAnnotationReader());
+
         return new UrlMatcher($this->symfonyRouteCollection, $context);
     }
 
@@ -120,9 +134,6 @@ class Router
      */
     protected function generateRoutesFromEntities(Reader $annotationReader, array $entityClasses)
     {
-        $this->symfonyRouteCollection = new RouteCollection();
-        $this->routes = [];
-
         foreach ($entityClasses as $entityClass) {
             $this->generateRoutesFromEntity($annotationReader, $entityClass);
         }
@@ -152,6 +163,54 @@ class Router
                 $this->addRoute($routeName, $method, $routeAnnotation->collection, self::$DEFAULT_COLLECTION_CONTROLLER, $method.'Action', [
                     'entityClass' => $entityClass,
                 ]);
+            }
+        }
+    }
+
+    /**
+     * @param Reader $annotationReader
+     */
+    public function generateRoutesFromControllers(Reader $annotationReader)
+    {
+        if (!isset($this->config['controllerPaths'])) {
+            return;
+        }
+
+        if (!is_array($this->config['controllerPaths'])) {
+            $this->config['controllerPaths'] = [$this->config['controllerPaths']];
+        }
+
+        $fileHelper = new FileHelper();
+
+        foreach ($this->config['controllerPaths'] as $path) {
+            $files = $fileHelper->findFilesInFolder($path);
+            foreach ($files as $filename) {
+                $namespaces = $fileHelper->findClassesInFile($filename);
+                foreach ($namespaces as $namespace => $classes) {
+                    foreach ($classes as $className) {
+                        $this->findRoutesInClass($annotationReader, $namespace . '\\' . $className);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Reader $annotationReader
+     * @param $className
+     */
+    protected function findRoutesInClass(Reader $annotationReader, $className)
+    {
+        $reflectionClass = new \ReflectionClass($className);
+        $methods = $reflectionClass->getMethods();
+
+        foreach ($methods as $method) {
+            if ($routeAnnotation = $annotationReader->getMethodAnnotation($method, RouteAnnotation::class)) {
+                $httpMethodAnnotation = $annotationReader->getMethodAnnotation($method, MethodAnnotation::class);
+                $httpMethod = is_null($httpMethodAnnotation) ? 'GET' : $httpMethodAnnotation->value;
+                $routeName = $className . '::' . $method->name;
+
+                $this->addRoute($routeName, $httpMethod, $routeAnnotation->value, $className, $method->name);
             }
         }
     }

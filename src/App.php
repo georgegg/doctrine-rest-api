@@ -51,7 +51,7 @@ class App
         $this->doctrine = new Doctrine($this->config->get('database'));
         $this->container = $this->setupContainer();
 
-        $this->router = new Router($this->doctrine);
+        $this->router = new Router($this->doctrine, $this->config->get('router'));
         $this->dispatcher = new Dispatcher($this->container);
         $this->response = new Response($this->doctrine->getAnnotationReader());
     }
