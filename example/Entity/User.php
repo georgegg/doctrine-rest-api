@@ -9,7 +9,7 @@ use pmill\Doctrine\Rest\AuthenticatableWithToken;
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
- * @REST\Url(entity="/api/user/{id}", collection="/api/user")
+ * @REST\Route(entity="/api/user/{id}", collection="/api/user")
  * @REST\FractalTransformer("pmill\Doctrine\Rest\Example\Transformer\UserTransformer")
  * @REST\MethodAuthentication({"PATCH"})
  */

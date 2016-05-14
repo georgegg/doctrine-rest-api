@@ -6,8 +6,13 @@ use Doctrine\Common\Annotations\Annotation;
 /**
  * @Annotation
  */
-final class Url extends Annotation
+final class Route extends Annotation
 {
+    /**
+     * @var string
+     */
+    public $value;
+
     /**
      * @var string
      */

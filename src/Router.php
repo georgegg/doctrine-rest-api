@@ -2,9 +2,9 @@
 namespace pmill\Doctrine\Rest;
 
 use Doctrine\Common\Annotations\Reader;
-use pmill\Doctrine\Rest\Annotation\Url;
 use pmill\Doctrine\Rest\Controller\CollectionController;
 use pmill\Doctrine\Rest\Controller\EntityController;
+use pmill\Doctrine\Rest\Annotation\Route as RouteAnnotation;
 use pmill\Doctrine\Rest\Exception\RestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
@@ -138,18 +138,18 @@ class Router
         $collectionMethods = self::$DEFAULT_COLLECTION_METHODS;
         $reflectionClass = new \ReflectionClass($entityClass);
 
-        /** @var Url $urlAnnotation */
-        if ($urlAnnotation = $annotationReader->getClassAnnotation($reflectionClass, Url::class)) {
+        /** @var RouteAnnotation $routeAnnotation */
+        if ($routeAnnotation = $annotationReader->getClassAnnotation($reflectionClass, RouteAnnotation::class)) {
             foreach ($entityMethods as $method) {
                 $routeName = $entityClass . '::entity::'.$method;
-                $this->addRoute($routeName, $method, $urlAnnotation->entity, self::$DEFAULT_ENTITY_CONTROLLER, $method.'Action', [
+                $this->addRoute($routeName, $method, $routeAnnotation->entity, self::$DEFAULT_ENTITY_CONTROLLER, $method.'Action', [
                     'entityClass' => $entityClass,
                 ]);
             }
 
             foreach ($collectionMethods as $method) {
                 $routeName = $entityClass . '::collection::'.$method;
-                $this->addRoute($routeName, $method, $urlAnnotation->collection, self::$DEFAULT_COLLECTION_CONTROLLER, $method.'Action', [
+                $this->addRoute($routeName, $method, $routeAnnotation->collection, self::$DEFAULT_COLLECTION_CONTROLLER, $method.'Action', [
                     'entityClass' => $entityClass,
                 ]);
             }
