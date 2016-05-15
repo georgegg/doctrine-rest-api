@@ -1,0 +1,7 @@
+#TODO
+
+0. Custom controllers
+1. Annotation aliases
+2. Authorisation
+3. PrePersist, PostPersist, PreFlush, PostFlush annotations
+4. Response Object (status code, string/object)
