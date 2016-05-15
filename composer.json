@@ -20,7 +20,8 @@
     "php-di/php-di": "^5.2",
     "pmill/doctrine-array-hydrator": "^0.1.2",
     "league/fractal": "^0.13.0",
-    "firebase/php-jwt": "^3.0"
+    "firebase/php-jwt": "^3.0",
+    "respect/validation": "^1.1"
   },
   "autoload": {
     "psr-4": {

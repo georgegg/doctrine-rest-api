@@ -7,7 +7,7 @@ class AuthenticationException extends RestException
      * @param string $message
      * @param int $code
      */
-    public function __construct($message, $code = 404)
+    public function __construct($message, $code = 401)
     {
         parent::__construct($message, $code, null);
     }

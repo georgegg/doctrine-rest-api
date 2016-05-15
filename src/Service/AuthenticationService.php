@@ -82,16 +82,21 @@ class AuthenticationService
 
     /**
      * @param $entityClass
-     * @param array $credentials
-     * @return array
+     * @param array $ids
+     * @param $password
+     * @return null|object
      * @throws AuthenticationException
      */
-    public function authenticateWithCredentials($entityClass, array $credentials)
+    public function authenticateWithCredentials($entityClass, array $ids, $password)
     {
         $objectRepository = $this->entityManager->getRepository($entityClass);
-        $object = $objectRepository->findBy($credentials);
+        $object = $objectRepository->findOneBy($ids);
         if (is_null($object)) {
-            throw new AuthenticationException('Authentication by credentials failed', 401);
+            throw new AuthenticationException('Authentication by supplied credentials failed', 401);
+        }
+
+        if (!password_verify($password, $object->getPassword())) {
+            throw new AuthenticationException('Authentication by supplied credentials failed', 401);
         }
 
         return $this->loggedInEntity = $object;

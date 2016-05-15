@@ -55,8 +55,6 @@ class EntityController
      */
     public function deleteAction($entityClass, $id)
     {
-        $data = $this->getRequestPayload();
-
         $entity = $this->findEntityById($entityClass, $id);
         $this->removeEntity($entity);
 
