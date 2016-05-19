@@ -34,7 +34,9 @@ class Doctrine
     public function __construct(array $databaseConfig)
     {
         $doctrineConfig = Setup::createAnnotationMetadataConfiguration($databaseConfig['entityPath'], true, $databaseConfig['proxyPath'], null, false);
-        $doctrineConfig->setAutoGenerateProxyClasses(false);
+
+        $autoGenerateProxies = isset($databaseConfig['autoGenerateProxies']) && $databaseConfig['autoGenerateProxies'] === true;
+        $doctrineConfig->setAutoGenerateProxyClasses($autoGenerateProxies);
 
         $eventManager = $this->createEventManager();
         $this->entityManager = EntityManager::create($databaseConfig, $doctrineConfig, $eventManager);
